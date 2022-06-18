@@ -11,6 +11,10 @@ app.use(json());
 
 const port = process.env.PORT || 5001;
 
+app.get("/", function (req, res) {
+  res.send("API's are Online!");
+});
+
 app.get("/view", function (req, res) {
   const _db = getDb();
   _db.find({}).toArray(function (err, result) {
