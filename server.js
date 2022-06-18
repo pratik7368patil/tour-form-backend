@@ -1,7 +1,7 @@
 import express, { json } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-dotenv.config({ path: "./config.env" });
+dotenv.config({ path: "./.env" });
 
 import { connectToServer, getDb } from "./db/conn.js";
 

@@ -1,6 +1,6 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
 import dotenv from "dotenv";
-dotenv.config({ path: "./config.env" });
+dotenv.config({ path: "./../.env" });
 
 const uri = process.env.ATLAS_URI;
 let _db;
