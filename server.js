@@ -13,12 +13,20 @@ app.use(json());
 
 const port = process.env.PORT || 5001;
 
+function getTourCollection() {
+  return getDb().collection(process.env.COLLECTION_TOUR);
+}
+
+function getTestimonialCollection() {
+  return getDb().collection(process.env.COLLECTION_TESTIMONIALS);
+}
+
 app.get("/", function (req, res) {
   res.send("API's are Online!");
 });
 
 app.get("/view", function (req, res) {
-  const _db = getDb();
+  const _db = getTourCollection();
   _db.find({}).toArray(function (err, result) {
     if (err) throw err;
     res.json(result);
@@ -26,7 +34,7 @@ app.get("/view", function (req, res) {
 });
 
 app.get("/view/:id", function (req, res) {
-  const _db = getDb();
+  const _db = getTourCollection();
   const id = { _id: ObjectId(req.params.id) };
   _db.findOne(id, function (err, result) {
     if (err) throw err;
@@ -35,7 +43,7 @@ app.get("/view/:id", function (req, res) {
 });
 
 app.post("/insert", function (req, response) {
-  const _db = getDb();
+  const _db = getTourCollection();
   const data = req.body;
   _db.insertOne(data, function (err, res) {
     if (err) throw err;
@@ -45,7 +53,7 @@ app.post("/insert", function (req, response) {
 });
 
 app.post("/update", async function (req, response) {
-  const _db = getDb();
+  const _db = getTourCollection();
   const newData = { ...req.body };
   delete newData._id;
   const res = await _db.updateOne(
@@ -58,12 +66,22 @@ app.post("/update", async function (req, response) {
 });
 
 app.delete("/delete/:id", function (req, response) {
-  const _db = getDb();
+  const _db = getTourCollection();
   const id = { _id: ObjectId(req.params.id) };
 
   _db.deleteOne(id, function (err, obj) {
     if (err) throw err;
     response.json(obj);
+  });
+});
+
+app.post("/testimonials", function (req, res) {
+  const _db = getTestimonialCollection();
+  const data = req.body;
+  _db.insertOne(data, function (err, res) {
+    if (err) throw err;
+    response.statusCode = 200;
+    response.json(res);
   });
 });
 
