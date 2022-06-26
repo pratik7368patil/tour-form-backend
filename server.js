@@ -42,6 +42,45 @@ app.get("/view/:id", function (req, res) {
   });
 });
 
+app.get("/search", function (req, res) {
+  const _db = getTourCollection();
+  _db.find({}).toArray(function (err, result) {
+    if (err) throw err;
+    const newResult = result.map((tour) => {
+      return { _id: tour._id, name: tour.name };
+    });
+    res.json(newResult);
+  });
+});
+
+app.get("/filter/indian", function (req, res) {
+  const _db = getTourCollection();
+  _db.find({}).toArray(function (err, result) {
+    if (err) throw err;
+    const newResult = result.filter((tour) => {
+      if (tour.country.toLowerCase().trim() === "india") {
+        return true;
+      }
+      return false;
+    });
+    res.json(newResult);
+  });
+});
+
+app.get("/filter/international", function (req, res) {
+  const _db = getTourCollection();
+  _db.find({}).toArray(function (err, result) {
+    if (err) throw err;
+    const newResult = result.filter((tour) => {
+      if (tour.country.toLowerCase().trim() !== "india") {
+        return true;
+      }
+      return false;
+    });
+    res.json(newResult);
+  });
+});
+
 app.post("/insert", function (req, response) {
   const _db = getTourCollection();
   const data = req.body;
@@ -86,7 +125,6 @@ app.post("/testimonials", function (req, res) {
 });
 
 app.listen(port, () => {
-  // perform a database connection when server starts
   connectToServer(function (err) {
     if (err) console.error(err);
   });
