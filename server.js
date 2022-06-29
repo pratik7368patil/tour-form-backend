@@ -21,6 +21,10 @@ function getTestimonialCollection() {
   return getDb().collection(process.env.COLLECTION_TESTIMONIALS);
 }
 
+function getTermsCollection() {
+  return getDb().collection(process.env.COLLECTION_TERMS);
+}
+
 app.get("/", function (req, res) {
   res.send("API's are Online!");
 });
@@ -114,12 +118,35 @@ app.delete("/delete/:id", function (req, response) {
   });
 });
 
-app.post("/testimonials", function (req, res) {
+app.post("/testimonials", function (req, response) {
   const _db = getTestimonialCollection();
   const data = req.body;
   _db.insertOne(data, function (err, res) {
     if (err) throw err;
     response.statusCode = 200;
+    response.json(res);
+  });
+});
+
+app.post("/updateterms", async function (req, response) {
+  const _db = getTermsCollection();
+  const id = ObjectId(req.body._id);
+  const res = _db.updateOne(
+    { _id: id },
+    {
+      $set: {
+        terms: req.body.terms,
+      },
+    }
+  );
+
+  response.send(res);
+});
+
+app.get("/terms", function (req, response) {
+  const _db = getTermsCollection();
+  _db.find({}).toArray(function (err, res) {
+    if (err) throw err;
     response.json(res);
   });
 });
