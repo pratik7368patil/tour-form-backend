@@ -1,5 +1,6 @@
 import express, { json } from "express";
 import cors from "cors";
+import ImageKit from "imagekit";
 import dotenv from "dotenv";
 dotenv.config({ path: "./.env" });
 
@@ -24,6 +25,26 @@ function getTestimonialCollection() {
 function getTermsCollection() {
   return getDb().collection(process.env.COLLECTION_TERMS);
 }
+
+const imagekit = new ImageKit({
+  urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+});
+
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
+app.get("/validateMedia", function (req, res) {
+  var result = imagekit.getAuthenticationParameters();
+  res.send(result);
+});
 
 app.get("/", function (req, res) {
   res.send("API's are Online!");
