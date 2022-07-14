@@ -6,7 +6,6 @@ dotenv.config({ path: "./.env" });
 
 import { connectToServer, getDb } from "./db/conn.js";
 import mongoDB from "mongodb";
-import e from "express";
 const ObjectId = mongoDB.ObjectId;
 
 const app = express();
@@ -265,7 +264,7 @@ app.delete("/delete/:id", async function (req, response) {
   });
 });
 
-app.post("/testimonials", function (req, response) {
+app.post("/insert/testimonials", function (req, response) {
   const _db = getTestimonialCollection();
   const data = req.body;
   _db.insertOne(data, function (err, res) {
@@ -273,6 +272,64 @@ app.post("/testimonials", function (req, response) {
     response.statusCode = 200;
     response.json(res);
   });
+});
+
+app.post("/update/testimonials", async function (req, response) {
+  const _db = getTestimonialCollection();
+  const id = ObjectId(req.body._id);
+  const res = await _db.updateOne(
+    { _id: id },
+    {
+      $set: {
+        username: req.body.username,
+        mediaLink: req.body.mediaLink,
+        feedback: req.body.feedback,
+      },
+    }
+  );
+
+  response.send(res);
+});
+
+app.get("/testimonials/view", async function (req, response) {
+  const _db = getTestimonialCollection();
+  const res = await _db.find({}).toArray();
+
+  if (res) {
+    response.send(res);
+    return;
+  }
+  response.send({ error: "Error while processing request" });
+});
+
+app.get("/testimonials/view/:id", function (req, response) {
+  const _db = getTestimonialCollection();
+  const id = ObjectId(req.params.id);
+
+  _db
+    .findOne({ _id: id })
+    .then((res) => {
+      response.send(res);
+    })
+    .catch((err) => {
+      response.send({ error: "Error while processing request" });
+      throw err;
+    });
+});
+
+app.delete("/delete/testimonials/:id", function (req, response) {
+  const _db = getTestimonialCollection();
+  const id = ObjectId(req.params.id);
+
+  _db
+    .deleteOne({ _id: id })
+    .then((res) => {
+      response.send(res);
+    })
+    .catch((err) => {
+      response.send({ error: "There is some error while deleting feedback." });
+      throw err;
+    });
 });
 
 app.post("/updateterms", async function (req, response) {
